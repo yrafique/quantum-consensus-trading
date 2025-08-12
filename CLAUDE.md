@@ -95,7 +95,7 @@ trading_system/
 ├── README.md                     # 1072-line comprehensive technical docs
 ├── requirements.txt              # Python dependencies
 ├── logs/                         # Application logs
-│   └── river_trading.log        # Main log file (JSON format)
+│   └── quantum_consensus.log    # Main log file (JSON format)
 ├── src/                          # Source code
 │   ├── ai/                       # AI and ML components
 │   ├── agents/                   # Trading agents
@@ -260,7 +260,7 @@ Technical Analysis → AI Reasoning → Results → UI Display
 ## Debugging & Troubleshooting
 
 ### Log Files
-- **Main Log:** `logs/river_trading.log` (JSON format)
+- **Main Log:** `logs/quantum_consensus.log` (JSON format)
 - **Startup Log:** Console output from quantum_start.py
 - **System Metrics:** Built-in monitoring dashboard
 
@@ -377,7 +377,7 @@ pkill -f streamlit               # Kill all Streamlit processes
 ### Development
 ```bash
 streamlit run quantum_consensus_app.py --server.port 8501
-tail -f logs/river_trading.log   # Monitor logs
+tail -f logs/quantum_consensus.log   # Monitor logs
 ```
 
 ### Health Check

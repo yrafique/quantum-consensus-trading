@@ -256,7 +256,7 @@ quantum_consensus_trading/
 ├── data/                        # Runtime data directory
 │   └── market_data.db          # SQLite cache database
 ├── logs/                        # Application logs
-│   └── river_trading.log       # Main log file
+│   └── quantum_consensus.log   # Main log file
 └── src/                         # Core source modules
     ├── agents/                  # Multi-Agent Trading System
     │   ├── trading_agents.py    # 6 Quantum trading agents

@@ -303,7 +303,7 @@ def setup_logging(
     
     # File handler with rotation
     file_handler = logging.handlers.RotatingFileHandler(
-        filename=os.path.join(log_dir, "river_trading.log"),
+        filename=os.path.join(log_dir, "quantum_consensus.log"),
         maxBytes=max_file_size,
         backupCount=backup_count,
         encoding='utf-8'
@@ -313,7 +313,7 @@ def setup_logging(
     
     # Error file handler (errors only)
     error_handler = logging.handlers.RotatingFileHandler(
-        filename=os.path.join(log_dir, "river_trading_errors.log"),
+        filename=os.path.join(log_dir, "quantum_consensus_errors.log"),
         maxBytes=max_file_size,
         backupCount=backup_count,
         encoding='utf-8'
@@ -337,7 +337,7 @@ def setup_logging(
     
     # Performance logger
     perf_handler = logging.handlers.RotatingFileHandler(
-        filename=os.path.join(log_dir, "river_trading_performance.log"),
+        filename=os.path.join(log_dir, "quantum_consensus_performance.log"),
         maxBytes=max_file_size,
         backupCount=backup_count,
         encoding='utf-8'

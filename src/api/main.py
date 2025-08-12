@@ -48,19 +48,19 @@ logger = structlog.get_logger(__name__)
 
 # Metrics
 REQUEST_COUNT = Counter(
-    'river_trading_requests_total',
+    'quantum_consensus_requests_total',
     'Total HTTP requests',
     ['method', 'endpoint', 'status']
 )
 
 REQUEST_DURATION = Histogram(
-    'river_trading_request_duration_seconds',
+    'quantum_consensus_request_duration_seconds',
     'HTTP request duration',
     ['method', 'endpoint']
 )
 
 ACTIVE_CONNECTIONS = Counter(
-    'river_trading_active_connections',
+    'quantum_consensus_active_connections',
     'Active WebSocket connections'
 )
 
@@ -400,12 +400,12 @@ async def liveness_check() -> Dict[str, str]:
 
 
 @app.exception_handler(BaseRiverException)
-async def river_trading_exception_handler(
+async def quantum_consensus_exception_handler(
     request: Request, 
     exc: BaseRiverException
 ) -> JSONResponse:
     """
-    Handle custom River Trading exceptions.
+    Handle custom QuantumConsensus exceptions.
     """
     logger.error(
         "River Trading exception occurred",

@@ -51,7 +51,7 @@ class DatabaseConfig:
     """Database configuration"""
     host: str = "localhost"
     port: int = 5432
-    name: str = "river_trading"
+    name: str = "quantum_consensus"
     username: str = "postgres"
     password: str = ""
     pool_size: int = 10
