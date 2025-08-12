@@ -3,10 +3,6 @@
 > **Beautiful. Explainable. Local‑first.**  
 > A modern Streamlit platform unifying quant math, MLX‑powered local LLM reasoning, and elegant dashboards for research‑grade trading decisions.
 
-<p align="center">
-  <img src="assets/ui-advanced-aapl-chart.png" alt="Advanced AAPL chart with multiple indicators in dark theme" width="92%">
-</p>
-
 <div align="center">
   
   [![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
