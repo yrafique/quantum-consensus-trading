@@ -34,7 +34,8 @@ from ..core.exceptions import (
 from ..core.logging_config import setup_logging
 from ..core.monitoring import MetricsCollector, HealthCheck
 from ..core.resilience import CircuitBreaker, RateLimiter
-from .routers import trading, analysis, portfolio, system, auth
+from .routers import trading, analysis, portfolio, system, auth, websocket
+from ..websocket.websocket_manager import websocket_manager
 from .middleware import (
     request_id_middleware,
     security_headers_middleware,
@@ -86,6 +87,10 @@ async def lifespan(app: FastAPI):
         metrics_collector.start_system_metrics_collection()
         # Note: HealthCheck doesn't have start_health_checks method, so we'll skip this for now
         
+        # Start WebSocket manager
+        await websocket_manager.start()
+        logger.info("WebSocket manager started")
+        
         # Store in app state
         app.state.metrics_collector = metrics_collector
         app.state.health_check = health_check
@@ -117,6 +122,10 @@ async def lifespan(app: FastAPI):
                 await task
             except asyncio.CancelledError:
                 pass
+        
+        # Stop WebSocket manager
+        await websocket_manager.stop()
+        logger.info("WebSocket manager stopped")
         
         # Cleanup resources
         if hasattr(app.state, 'health_check'):
@@ -225,6 +234,13 @@ def create_application() -> FastAPI:
         prefix="/api/v1/portfolio",
         tags=["Portfolio"],
         dependencies=protected_dependencies
+    )
+    
+    # WebSocket routes (no authentication required for real-time data)
+    app.include_router(
+        websocket.router,
+        prefix="/api/v1",
+        tags=["WebSocket"]
     )
     
     return app

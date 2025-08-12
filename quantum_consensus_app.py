@@ -33,6 +33,14 @@ import ta
 import os
 import time
 
+# Import WebSocket client for real-time data
+try:
+    from src.websocket.streamlit_websocket_client import StreamlitWebSocketClient, create_websocket_javascript
+    WEBSOCKET_AVAILABLE = True
+except ImportError:
+    WEBSOCKET_AVAILABLE = False
+    StreamlitWebSocketClient = None
+
 # Page configuration
 st.set_page_config(
     page_title="Trading System",
@@ -60,6 +68,10 @@ if 'memory' not in st.session_state:
 # Initialize page state
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'portfolio'
+
+# Initialize WebSocket client
+if WEBSOCKET_AVAILABLE and 'websocket_client' not in st.session_state:
+    st.session_state.websocket_client = StreamlitWebSocketClient()
 
 # Robinhood-style header
 header_col1, header_col2 = st.columns([6, 1])
@@ -536,26 +548,74 @@ elif page == "ai_chat":
         </div>
         """, unsafe_allow_html=True)
         
-        # Display watchlist summary in a clean format
-        for symbol in st.session_state.watchlist[:5]:  # Show top 5 stocks
-            info = get_stock_info(symbol)
-            color = "#00c805" if info['change_percent'] >= 0 else "#ff4444"
+        # Real-time WebSocket data integration
+        if WEBSOCKET_AVAILABLE:
+            ws_client = st.session_state.websocket_client
             
-            st.markdown(f"""
-            <div style='background: rgba(255, 255, 255, 0.02); 
-                        border: 1px solid rgba(255, 255, 255, 0.05); 
-                        border-radius: 8px; 
-                        padding: 12px; 
-                        margin-bottom: 8px;'>
-                <div style='display: flex; justify-content: space-between; align-items: center;'>
-                    <span style='font-weight: 600; color: #ffffff;'>{symbol}</span>
-                    <div style='text-align: right;'>
-                        <div style='color: #ffffff; font-size: 14px;'>${info['price']:.2f}</div>
-                        <div style='color: {color}; font-size: 12px;'>{info['change_percent']:+.2f}%</div>
+            # Auto-subscribe to watchlist symbols
+            for symbol in st.session_state.watchlist[:5]:
+                ws_client.subscribe_to_symbol(symbol)
+            
+            # Display real-time quotes
+            for symbol in st.session_state.watchlist[:5]:
+                quote_data = ws_client.get_latest_quote(symbol)
+                
+                if quote_data and ws_client.is_data_fresh(symbol, max_age_seconds=60):
+                    # Use real-time WebSocket data
+                    price = quote_data.get('price', 0)
+                    change_percent = quote_data.get('change_percent', 0)
+                    color = "#00c805" if change_percent >= 0 else "#ff4444"
+                    timestamp = quote_data.get('timestamp', '')
+                    
+                    # Real-time indicator
+                    live_indicator = "🔴 LIVE" if ws_client.is_data_fresh(symbol, 30) else "🟡 CACHED"
+                else:
+                    # Fallback to static data
+                    info = get_stock_info(symbol)
+                    price = info['price']
+                    change_percent = info['change_percent']
+                    color = "#00c805" if change_percent >= 0 else "#ff4444"
+                    live_indicator = "⚪ STATIC"
+                
+                st.markdown(f"""
+                <div style='background: rgba(255, 255, 255, 0.02); 
+                            border: 1px solid rgba(255, 255, 255, 0.05); 
+                            border-radius: 8px; 
+                            padding: 12px; 
+                            margin-bottom: 8px;'>
+                    <div style='display: flex; justify-content: space-between; align-items: center;'>
+                        <div>
+                            <span style='font-weight: 600; color: #ffffff;'>{symbol}</span>
+                            <div style='font-size: 10px; color: rgba(255,255,255,0.5);'>{live_indicator}</div>
+                        </div>
+                        <div style='text-align: right;'>
+                            <div style='color: #ffffff; font-size: 14px;'>${price:.2f}</div>
+                            <div style='color: {color}; font-size: 12px;'>{change_percent:+.2f}%</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
+        else:
+            # Fallback for when WebSocket is not available
+            for symbol in st.session_state.watchlist[:5]:  # Show top 5 stocks
+                info = get_stock_info(symbol)
+                color = "#00c805" if info['change_percent'] >= 0 else "#ff4444"
+                
+                st.markdown(f"""
+                <div style='background: rgba(255, 255, 255, 0.02); 
+                            border: 1px solid rgba(255, 255, 255, 0.05); 
+                            border-radius: 8px; 
+                            padding: 12px; 
+                            margin-bottom: 8px;'>
+                    <div style='display: flex; justify-content: space-between; align-items: center;'>
+                        <span style='font-weight: 600; color: #ffffff;'>{symbol}</span>
+                        <div style='text-align: right;'>
+                            <div style='color: #ffffff; font-size: 14px;'>${info['price']:.2f}</div>
+                            <div style='color: {color}; font-size: 12px;'>{info['change_percent']:+.2f}%</div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
     
     # Display selected agent info with modern styling
     selected_info = available_agents[st.session_state.selected_agent]
@@ -790,6 +850,42 @@ I couldn't identify a stock ticker in "{user_input}".
                 
                 st.session_state.chat_history.append({'role': 'assistant', 'content': ai_response})
                 st.rerun()
+    
+    # Add WebSocket integration for real-time data updates
+    if WEBSOCKET_AVAILABLE:
+        # Add auto-refresh functionality
+        st.markdown("---")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            if st.button("🔄 Refresh Data", use_container_width=True):
+                st.rerun()
+        
+        with col2:
+            # WebSocket connection status
+            ws_client = st.session_state.websocket_client
+            ws_client.display_connection_status()
+        
+        with col3:
+            # Quick subscription controls
+            if st.button("📊 Subscribe to Watchlist", use_container_width=True):
+                for symbol in st.session_state.watchlist[:5]:
+                    ws_client.subscribe_to_symbol(symbol)
+                st.success("Subscribed to watchlist symbols!")
+                st.rerun()
+        
+        # Inject WebSocket JavaScript for browser-level real-time updates
+        st.markdown(create_websocket_javascript(), unsafe_allow_html=True)
+        
+        # Auto-refresh component (updates every 30 seconds)
+        st.markdown("""
+        <script>
+            // Auto-refresh Streamlit app every 30 seconds for real-time data
+            setTimeout(function() {
+                window.location.reload();
+            }, 30000);
+        </script>
+        """, unsafe_allow_html=True)
 
 # Stocks Page
 elif page == "stocks":
