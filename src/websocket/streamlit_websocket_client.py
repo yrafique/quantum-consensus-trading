@@ -25,7 +25,7 @@ class StreamlitWebSocketClient:
     using session state and periodic refresh.
     """
     
-    def __init__(self, websocket_url: str = "ws://localhost:8000/api/v1/ws/quotes"):
+    def __init__(self, websocket_url: str = "ws://localhost:8001/quotes"):
         self.websocket_url = websocket_url
         self.client_id = f"streamlit_{int(time.time())}"
         
@@ -296,7 +296,7 @@ def create_websocket_javascript() -> str:
     let subscriptions = new Set();
     
     function connectWebSocket() {
-        const wsUrl = 'ws://localhost:8000/api/v1/ws/quotes/' + clientId;
+        const wsUrl = 'ws://localhost:8001/quotes/' + clientId;
         ws = new WebSocket(wsUrl);
         
         ws.onopen = function(event) {

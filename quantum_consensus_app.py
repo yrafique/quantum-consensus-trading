@@ -874,8 +874,34 @@ I couldn't identify a stock ticker in "{user_input}".
                 st.success("Subscribed to watchlist symbols!")
                 st.rerun()
         
-        # Inject WebSocket JavaScript for browser-level real-time updates
-        st.markdown(create_websocket_javascript(), unsafe_allow_html=True)
+        # Inject working WebSocket JavaScript for browser-level real-time updates
+        st.markdown("""
+        <script>
+        console.log('🚀 Connecting to working WebSocket service...');
+        let ws = new WebSocket('ws://localhost:8001/quotes/streamlit_' + Date.now());
+        
+        ws.onopen = function() {
+            console.log('✅ Connected to real-time service');
+            ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA'].forEach(symbol => {
+                ws.send(JSON.stringify({type: 'subscribe', data: {symbol: symbol}}));
+            });
+        };
+        
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'quote') {
+                localStorage.setItem('ws_connected', 'true');
+                localStorage.setItem('live_' + data.data.symbol, JSON.stringify(data.data));
+                console.log('📈 Live quote:', data.data.symbol, '$' + data.data.price.toFixed(2));
+            }
+        };
+        
+        ws.onclose = function() {
+            localStorage.setItem('ws_connected', 'false');
+            setTimeout(() => ws = new WebSocket('ws://localhost:8001/quotes/streamlit_' + Date.now()), 5000);
+        };
+        </script>
+        """, unsafe_allow_html=True)
         
         # Auto-refresh component (updates every 30 seconds)
         st.markdown("""
