@@ -8,7 +8,7 @@
   [![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org)
   [![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
   [![MLX](https://img.shields.io/badge/MLX-Apple%20Silicon-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/ml-explore/mlx)
-  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](#-license)
   
 </div>
 
@@ -1052,7 +1052,7 @@ python3 quantum_consensus_app.py
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see the [Issues](https://github.com/yrafique/quantum-consensus-trading/issues) page to get started.
 
 ### Development Setup
 
@@ -1091,18 +1091,17 @@ pre-commit install
 
 ## 📖 Documentation
 
-### Core Documentation
-- **[Technical Architecture](docs/TECHNICAL.md)** — System design deep dive
-- **[API Reference](docs/API.md)** — Complete API documentation
-- **[Agent Guide](docs/AGENTS.md)** — Trading agent strategies
-- **[Indicators Guide](docs/INDICATORS.md)** — Technical indicators
-- **[Deployment Guide](docs/DEPLOYMENT.md)** — Production deployment
+### Available Documentation
+- **[Complete Technical Guide](CLAUDE.md)** — AI assistant context with full system details
+- **[Startup Guide](STARTUP.md)** — Getting started and configuration
+- **This README** — Comprehensive overview with technical deep dives
+- **Code Documentation** — Inline docstrings throughout the codebase
 
-### Tutorials
-- **[Getting Started](docs/tutorials/GETTING_STARTED.md)** — First steps
-- **[Custom Agents](docs/tutorials/CUSTOM_AGENTS.md)** — Build your own agent
-- **[Backtesting](docs/tutorials/BACKTESTING.md)** — Strategy testing
-- **[API Usage](docs/tutorials/API_USAGE.md)** — REST API examples
+### Quick References
+- **Agent System** — See expandable sections above for each agent
+- **API Endpoints** — Documented in `src/api/routers/` files
+- **Configuration** — Examples in this README and `quantum_settings.json`
+- **Troubleshooting** — Common issues section above
 
 ---
 
@@ -1124,7 +1123,7 @@ pre-commit install
 
 ## 📜 License
 
-MIT License — See [LICENSE](LICENSE) for details
+This project is licensed under the MIT License
 
 ---
 
